@@ -8,9 +8,7 @@ class Song extends React.Component {
     }
 
     handleAction() {
-        if (this.props.button === '-') {
-            this.props.action();
-        }
+        this.props.action(this.props.song.id);
     }
 
     render() {

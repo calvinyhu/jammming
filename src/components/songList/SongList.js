@@ -10,7 +10,7 @@ class SongList extends React.Component {
                 <div className="SongList">
                     { 
                         this.props.songList.map(song => { 
-                            return <Song song={song.props} button={'+'} key={song.id}/>
+                            return <Song song={song.props} action={this.props.action} button={'+'} key={song.id}/>
                         })
                     }
                 </div>

@@ -8,15 +8,12 @@ import Spotify from '../../utils/Spotify'
 import './App.css'
 
 let sl = [
-    <Song name='Order More' artist='G-Eazy' album="When It's Dark Out" />,
-    <Song name='Paranoid' artist='Post Malone' album='beerbongs & bentleys' />,
-    <Song name='Famous' artist='Kanye West' album='The Life of Pablo' />,
+    <Song id='1' name='Order More' artist='G-Eazy' album="When It's Dark Out" />,
+    <Song id='2' name='Paranoid' artist='Post Malone' album='beerbongs & bentleys' />,
+    <Song id='3' name='Famous' artist='Kanye West' album='The Life of Pablo' />,
 ];
 
 let pl = [
-    <Song name='Order More' artist='G-Eazy' album="When It's Dark Out" />,
-    <Song name='Paranoid' artist='Post Malone' album='beerbongs & bentleys' />,
-    <Song name='Famous' artist='Kanye West' album='The Life of Pablo' />,
 ];
 
 class App extends React.Component {
@@ -27,19 +24,37 @@ class App extends React.Component {
             playlist: [],
         };
         this.searchSpotify = this.searchSpotify.bind(this);
+        this.onAddSong = this.onAddSong.bind(this);
         this.onRemoveSong = this.onRemoveSong.bind(this);
     }
 
     searchSpotify(searchTerm) {
-        Spotify.search().then(songList => {
-            this.setState({
-                songList: songList
-            });
+        Spotify.search(searchTerm);
+        // Spotify.search(searchTerm).then(songList => {
+        //     this.setState({
+        //         // songList: songList
+        //     });
+        // });
+    }
+
+    onAddSong(songId) {
+        for (let i = sl.length - 1; i >= 0; --i) {
+            if (sl[i].props.id === songId) {
+                pl.push(sl[i]);
+            }
+        }
+        this.setState({
         });
     }
 
-    onRemoveSong() {
-        console.log("Hello");
+    onRemoveSong(songId) {
+        for (let i = pl.length - 1; i >= 0; --i) {
+            if (pl[i].props.id === songId) {
+                pl.splice(i,1);
+            }
+        }
+        this.setState({
+        });
     }
 
     render() {
@@ -48,7 +63,7 @@ class App extends React.Component {
                 <h1>Ja<span className="highlight">mmm</span>ing</h1>
                 <SearchBar searchSpotify={this.searchSpotify}/>
                 <div className="App-lists">
-                    <SongList songList={sl} />
+                    <SongList songList={this.state.songList} action={this.onAddSong} />
                     <Playlist playlist={pl} action={this.onRemoveSong} />
                 </div>
             </div>
