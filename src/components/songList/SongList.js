@@ -1,22 +1,27 @@
 import React from 'react';
-import Song from '../song/Song'
-import './SongList.css'
+import Song from '../Song/Song';
+import styles from './SongList.module.scss';
 
-class SongList extends React.Component {
-    render() {
-        return (
-            <div className="SearchResults">
-                <h2>Results</h2>
-                <div className="SongList">
-                    { 
-                        this.props.songList.map(song => { 
-                            return <Song song={song.props} action={this.props.action} button={'+'} key={song.id}/>
-                        })
-                    }
-                </div>
-            </div>
-        );
-    }
-}
+const songList = props => {
+  const renderSongs = songList => {
+    return Object.keys(songList).map(songId => {
+      return (
+        <Song
+          key={songId}
+          song={songList[songId]}
+          click={props.action}
+          btnName={props.name === 'Results' ? 'add' : 'remove'}
+        />
+      );
+    });
+  };
 
-export default SongList;
+  return (
+    <div className={styles.SongList}>
+      <h2>{props.name}</h2>
+      <div className={styles.Songs}>{renderSongs(props.songList)}</div>
+    </div>
+  );
+};
+
+export default songList;

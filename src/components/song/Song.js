@@ -1,27 +1,24 @@
-import React from 'react'
-import './Song.css'
+import React from 'react';
+import styles from './Song.module.scss';
 
-class Song extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleAction = this.handleAction.bind(this);
-    }
+const song = props => {
+  const click = () => {
+    props.click(props.song.id);
+  };
 
-    handleAction() {
-        this.props.action(this.props.song.id);
-    }
+  return (
+    <div className={styles.Song}>
+      <div className={styles.Info}>
+        <h3>{props.song.name}</h3>
+        <p>
+          {props.song.artist} | {props.song.album}
+        </p>
+      </div>
+      <button className={styles.Action} onClick={click}>
+        <div className={'material-icons'}>{props.btnName}</div>
+      </button>
+    </div>
+  );
+};
 
-    render() {
-        return(
-            <div className="Song">
-                <div className="Song-information">
-                    <h3>{this.props.song.name}</h3>
-                    <p>{this.props.song.artist} | {this.props.song.album}</p>
-                </div>
-                <a className="Song-action" onClick={this.handleAction} >{this.props.button}</a>
-            </div>
-        );
-    }
-}
-
-export default Song;
+export default song;

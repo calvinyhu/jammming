@@ -1,0 +1,55 @@
+.SearchBar {
+  display: inline-block;
+  width: 100%;
+  margin: 3rem 0;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  input {
+    width: 50%;
+    min-width: 10rem;
+    max-width: 30rem;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 5px;
+    color: #010c3f;
+    text-align: center;
+    appearance: none;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  button {
+    cursor: pointer;
+    width: 10rem;
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 50px;
+    background-color: #010c3f;
+    color: white;
+    text-align: center;
+    transition: 0.3s;
+
+    &:hover {
+      background-color: #6c41ec;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      background-color: #363636;
+      color: gray;
+
+      &:hover {
+        background-color: #363636;
+      }
+    }
+  }
+}
