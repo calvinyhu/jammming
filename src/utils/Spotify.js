@@ -8,7 +8,7 @@ const authEndpoint = 'https://accounts.spotify.com/authorize?';
 const searchEndpoint = 'https://api.spotify.com/v1/search?';
 const userEndpoint = 'https://api.spotify.com/v1/me';
 
-const redirectUrl = 'http://localhost:3000/';
+const redirectUrl = 'https://jammmingspotify.firebaseapp.com/';
 const accessTokenRegex = 'access_token=([^&]*)';
 const expireTimeRegex = 'expires_in=([^&]*)';
 
