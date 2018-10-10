@@ -1,17 +1,95 @@
 .SongList {
   width: 100%;
   padding: 1rem;
+  margin-bottom: 2rem;
 
   @media (min-width: 25rem) {
     min-width: 10rem;
     max-width: 30rem;
   }
+
+  @media (min-width: 56rem) {
+    margin-bottom: 0;
+  }
+}
+
+.Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 4rem;
+  margin-bottom: 0.5rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+
+    @media (min-width: 40rem) {
+      font-size: 2rem;
+    }
+  }
+
+  input {
+    appearance: none;
+    border: none;
+    border-bottom: 2px solid white;
+    background: none;
+    color: white;
+    font-size: 1.5rem;
+    width: 100%;
+    margin-right: 1rem;
+
+    @media (min-width: 40rem) {
+      font-size: 2rem;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &::placeholder {
+      color: #ccc;
+    }
+  }
 }
 
 .Songs {
-  min-height: 20rem;
+  height: 30rem;
   overflow-y: scroll;
   padding: 1rem;
   background-color: rgba(1, 12, 63, 0.7);
   box-shadow: 0 4px 2px 2px #000000;
+}
+
+.CreatePlaylist {
+  cursor: pointer;
+  appearance: none;
+  background: #010c3f;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 0.5rem 0.8rem;
+  width: 7rem;
+  transition: 0.3s;
+  min-width: 6rem;
+
+  @media (min-width: 40rem) {
+    padding: 0.8rem 1rem;
+    min-width: 7rem;
+  }
+
+  &:hover {
+    background-color: #6c41ec;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: #363636;
+    color: gray;
+
+    &:hover {
+      background-color: #363636;
+    }
+  }
 }

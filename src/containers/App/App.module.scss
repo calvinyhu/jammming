@@ -46,7 +46,7 @@
   align-items: center;
   width: 100%;
 
-  @media (min-width: 900px) {
+  @media (min-width: 56rem) {
     flex-direction: row;
     align-items: flex-start;
   }

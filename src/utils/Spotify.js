@@ -1,55 +1,108 @@
-const proxyurl = "https://cors-anywhere.herokuapp.com/";
-const clientId = "c2548b91921142a6b081fa5d419cec1b";
-const redirectUrl = "http://localhost:3000/";
-const accessTokenRegex = "access_token=([^&]*)";
-const expireTimeRegex = "expires_in=([^&]*)";
-let accessToken = null;
-let expireTime = null;
+import axios from 'axios';
 
-const Spotify = {
-    getAccessToken() {
-        if (accessToken)
-            return accessToken;
-        else {
-            const url = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUrl}`;
-            return fetch(proxyurl + url)
-            .then(function(response) {
-                if (response.ok) {
-                    console.log("Response ok.");
-                    return response.url;
-                }
-                console.log("Response not ok.");
-                return null;
-            })
-            .then(function(url) {
-                const authorizationUrl = (url).substring(proxyurl.length);
-                window.location = authorizationUrl;
-                const responseUrl = window.location.href;
-                accessToken = responseUrl.match(accessTokenRegex)[1];
-                expireTime = responseUrl.match(expireTimeRegex)[1];
-                console.log("URL: " + url);
-                console.log("Access Token: " + accessToken);
-                console.log("Expire Time: " + expireTime);
-                return accessToken;
-            });
-        }
-    },
-    search(searchTerm) {
-        if (!accessToken) {
-            console.log("Getting Access Token!");
-            accessToken = this.getAccessToken();
-            // console.log("Access Token 2: " + accessToken);
-        }
-        
-        // console.log("Searching!");
-        // return fetch(`https://api.spotify.com/v1/search?type=${searchTerm}`, {
-        //     headers: { Authorization: `Bearer ${accessToken}` }
-        // }).then(promiseResponse => {
-        //     return promiseResponse.json();
-        // }).then(jsonResponse => {
-        //     console.log(jsonResponse);
-        // });
-    }
+const clientId = 'c2548b91921142a6b081fa5d419cec1b';
+// const cors = 'https://cors-anywhere.herokuapp.com/';
+
+// Spotify Endpoints
+const authEndpoint = 'https://accounts.spotify.com/authorize?';
+const searchEndpoint = 'https://api.spotify.com/v1/search?';
+const userEndpoint = 'https://api.spotify.com/v1/me';
+
+const redirectUrl = 'http://localhost:3000/';
+const accessTokenRegex = 'access_token=([^&]*)';
+const expireTimeRegex = 'expires_in=([^&]*)';
+
+let userId = null;
+export let accessToken = null;
+export let expireTime = null;
+
+// Implicit Grant Flow
+export const getAccessToken = () => {
+  const params = `client_id=${clientId}&response_type=token&redirect_uri=${redirectUrl}&scope=playlist-modify-public&show_dialog=true`;
+  const authUrl = authEndpoint + params;
+
+  // Redirect user to spotify auth
+  window.location = authUrl;
 };
 
-export default Spotify;
+export const setAuth = url => {
+  accessToken = url.match(accessTokenRegex)
+    ? url.match(accessTokenRegex)[1]
+    : null;
+  expireTime = url.match(expireTimeRegex)
+    ? url.match(expireTimeRegex)[1]
+    : null;
+};
+
+export const search = term => {
+  const params = `q=${term}&type=track`;
+  const searchUrl = searchEndpoint + params;
+  const config = {
+    headers: { Authorization: 'Bearer ' + accessToken }
+  };
+
+  return axios
+    .get(searchUrl, config)
+    .then(response => {
+      return response.data;
+    })
+    .catch(searchError => {
+      return searchError;
+    });
+};
+
+const getUserId = () => {
+  console.log('Getting user id');
+  const userUrl = userEndpoint;
+  const config = {
+    headers: { Authorization: 'Bearer ' + accessToken }
+  };
+
+  return axios.get(userUrl, config).then(response => {
+    return response.data.id;
+  });
+};
+
+const postPlaylist = (userId, playlistName) => {
+  const playlistsEndpoint = `https://api.spotify.com/v1/users/${userId}/playlists?`;
+  const data = {
+    name: playlistName
+  };
+  const config = {
+    headers: {
+      Authorization: 'Bearer ' + accessToken,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  return axios.post(playlistsEndpoint, data, config).then(response => {
+    return response.data.id;
+  });
+};
+
+const postTracksToPlaylist = (playlistId, trackIds) => {
+  const uris = trackIds.map(trackId => {
+    return `spotify:track:${trackId}`;
+  });
+
+  const playlistEndpoint = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+  const data = { uris: uris };
+  const config = {
+    headers: {
+      Authorization: 'Bearer ' + accessToken,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  return axios.post(playlistEndpoint, data, config);
+};
+
+export const createPlaylist = async (playlistName, trackIds) => {
+  try {
+    if (!userId) userId = await getUserId();
+    const playlistId = await postPlaylist(userId, playlistName);
+    await postTracksToPlaylist(playlistId, trackIds);
+  } catch (error) {
+    console.log(error.response.data.error);
+  }
+};

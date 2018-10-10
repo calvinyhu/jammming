@@ -1,37 +1,56 @@
 import React from 'react';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import SongList from '../../components/SongList/SongList';
-// import Spotify from '../../utils/Spotify';
+import {
+  accessToken,
+  getAccessToken,
+  search,
+  setAuth,
+  createPlaylist
+} from '../../utils/spotify';
 import styles from './App.module.scss';
 import { updateObject } from '../../utils/utils';
 
+export const LIST_NAMES = {
+  RESULTS: 'Search Results',
+  PLAYLIST: 'New Playlist'
+};
+
 class App extends React.Component {
   state = {
-    results: {
-      1: {
-        id: 1,
-        name: 'Order More',
-        artist: 'G-Eazy',
-        album: "When It's Dark Out"
-      },
-      2: {
-        id: 2,
-        name: 'Paranoid',
-        artist: 'Post Malone',
-        album: 'beerbongs & bentleys'
-      },
-      3: {
-        id: 3,
-        name: 'Famous',
-        artist: 'Kanye West',
-        album: 'The Life of Pablo'
-      }
-    },
+    playlistName: '',
+    results: {},
     playlist: {}
   };
 
+  componentDidMount() {
+    setAuth(window.location.href);
+  }
+
   searchSpotify = term => {
-    console.log(term);
+    if (!accessToken) getAccessToken();
+    else {
+      search(term).then(response => {
+        this.replaceResults(response.tracks);
+      });
+    }
+  };
+
+  replaceResults = tracks => {
+    const results = {};
+
+    if (tracks && tracks.items) {
+      tracks.items.forEach(item => {
+        results[item.id] = {
+          id: item.id,
+          name: item.name,
+          artist: item.artists && item.artists[0] ? item.artists[0].name : '',
+          album: item.album ? item.album.name : ''
+        };
+      });
+    }
+
+    this.setState({ results });
   };
 
   addSong = songId => {
@@ -48,6 +67,14 @@ class App extends React.Component {
     this.setState({ playlist: newPlaylist });
   };
 
+  handleCreatePlaylist = () => {
+    createPlaylist(this.state.playlistName, Object.keys(this.state.playlist));
+  };
+
+  changePlaylistName = event => {
+    this.setState({ playlistName: event.target.value });
+  };
+
   render() {
     return (
       <div className={styles.AppContainer}>
@@ -60,14 +87,17 @@ class App extends React.Component {
           <SearchBar searchSpotify={this.searchSpotify} />
           <div className={styles.Lists}>
             <SongList
-              name={'Results'}
+              name={LIST_NAMES.RESULTS}
               songList={this.state.results}
               action={this.addSong}
             />
             <SongList
-              name={'Playlist'}
+              name={LIST_NAMES.PLAYLIST}
               songList={this.state.playlist}
               action={this.removeSong}
+              listAction={this.handleCreatePlaylist}
+              changeInput={this.changePlaylistName}
+              value={this.state.playlistName}
             />
           </div>
         </div>
